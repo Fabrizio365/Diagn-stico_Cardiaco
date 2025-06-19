@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 @st.cache_data
 def cargar_datos():
     df = pd.read_csv("Cardiovascular_Disease_Dataset.csv")
-    X = df.drop("target", axis=1)
+    X = df.drop(["target", "patientid"], axis=1)
     y = df["target"]
     return X, y
 
@@ -157,3 +157,4 @@ if st.button("🔍 Predecir estado de salud"):
             st.error(f"Ocurrió un error al procesar los datos: {e}")
     else:
         st.warning("⚠️ Por favor completa todos los campos antes de predecir.")
+
