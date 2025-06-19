@@ -53,6 +53,18 @@ st.markdown("""
             0% { opacity: 0; transform: translateY(10px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+        .form-container {
+            animation: rgbGlow 5s infinite alternate;
+            border-radius: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        @keyframes rgbGlow {
+            0% { box-shadow: 0 0 15px red; }
+            33% { box-shadow: 0 0 15px green; }
+            66% { box-shadow: 0 0 15px blue; }
+            100% { box-shadow: 0 0 15px red; }
+        }
         .custom-yes { background-color: #c8e6c9; border-radius: 5px; padding: 5px; color: #256029; font-weight: bold; }
         .custom-no { background-color: #ffcdd2; border-radius: 5px; padding: 5px; color: #b71c1c; font-weight: bold; }
     </style>
@@ -109,7 +121,7 @@ with st.sidebar:
 
 # Formulario
 with st.container():
-    st.markdown("<div class='fade-transition'>", unsafe_allow_html=True)
+    st.markdown("<div class='fade-transition form-container'>", unsafe_allow_html=True)
     st.title("🧾 Formulario de Evaluación")
 
 col1, col2, col3 = st.columns(3)
@@ -156,4 +168,3 @@ if st.button("🔍 Predecir estado de salud"):
             st.error(f"Ocurrió un error al procesar los datos: {e}")
     else:
         st.warning("⚠️ Por favor completa todos los campos antes de predecir.")
-
