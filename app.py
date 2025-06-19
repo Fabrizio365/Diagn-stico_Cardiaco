@@ -48,6 +48,8 @@ st.markdown("""
             0% { opacity: 0; transform: translateY(10px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+        .custom-yes { background-color: #c8e6c9; border-radius: 5px; padding: 5px; color: #256029; font-weight: bold; }
+        .custom-no { background-color: #ffcdd2; border-radius: 5px; padding: 5px; color: #b71c1c; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -89,7 +91,22 @@ with st.sidebar:
     st.image("imagen_logo.png")
     st.markdown('</div>', unsafe_allow_html=True)
     with st.expander("ℹ️ Información de las variables", expanded=False):
-        st.markdown("Edad, Género, Tipo de dolor en el pecho, Presión, Colesterol, Azúcar en ayunas, ECG, Frecuencia máxima, Angina, Oldpeak, Pendiente del ST, Vasos, Tipo de talasemia")
+        st.markdown("""
+        <ul style='font-size: 15px;'>
+            <li><b>Edad:</b> Años cumplidos del paciente, importante para evaluar riesgos según la etapa de vida.</li>
+            <li><b>Género:</b> 0 = Femenino, 1 = Masculino. Se usa para identificar diferencias biológicas relevantes en diagnósticos.</li>
+            <li><b>Tipo de dolor torácico:</b> Clasificación del dolor en el pecho, que puede indicar desde molestias leves hasta signos de enfermedad cardíaca.</li>
+            <li><b>Presión arterial en reposo:</b> Medida de la fuerza que ejerce la sangre contra las paredes de las arterias cuando el cuerpo está en reposo.</li>
+            <li><b>Colesterol sérico:</b> Nivel de colesterol en la sangre; valores altos pueden aumentar el riesgo cardiovascular.</li>
+            <li><b>Glucosa en ayunas:</b> Nivel de azúcar en sangre tras un ayuno de al menos 8 horas. Un valor >120 mg/dL puede indicar prediabetes o diabetes.</li>
+            <li><b>Electrocardiograma (ECG) en reposo:</b> Registro de la actividad eléctrica del corazón sin esfuerzo físico. Detecta arritmias o signos de daño cardíaco.</li>
+            <li><b>Frecuencia cardíaca máxima:</b> El número más alto de latidos por minuto alcanzado durante el ejercicio. Ayuda a evaluar la respuesta del corazón al esfuerzo.</li>
+            <li><b>Angina inducida por ejercicio:</b> Dolor en el pecho provocado por el esfuerzo físico, señal de posible obstrucción coronaria.</li>
+            <li><b>Oldpeak:</b> Descenso del segmento ST en el ECG durante el ejercicio. Puede indicar isquemia (falta de oxígeno en el corazón).</li>
+            <li><b>Pendiente del ST:</b> Forma en que cambia el segmento ST tras el ejercicio. Su patrón ayuda a interpretar el riesgo cardíaco.</li>
+            <li><b>N.º de vasos principales:</b> Número de arterias coronarias principales con flujo sanguíneo visible mediante fluoroscopía. Cuantos más estén afectados, mayor el riesgo.</li>
+        </ul>
+        """, unsafe_allow_html=True)
 
 # Formulario
 with st.container():
@@ -105,22 +122,21 @@ with col1:
 
 with col2:
     colesterol = st.number_input("Nivel de colesterol sérico", min_value=100, max_value=600)
-    azucar = st.selectbox("¿Azúcar en ayunas > 120?", [0, 1], format_func=lambda x: "No" if x == 0 else "Sí")
+    azucar = st.radio("¿Azúcar en ayunas > 120?", [0, 1], format_func=lambda x: f"{'✅ Sí' if x == 1 else '❌ No'}")
     electro = st.selectbox("Electrocardiograma en reposo", [0,1,2])
     frecuencia = st.number_input("Frecuencia cardiaca máxima", min_value=60, max_value=250)
 
 with col3:
-    angina = st.selectbox("¿Angina inducida por ejercicio?", [0,1], format_func=lambda x: "No" if x == 0 else "Sí")
+    angina = st.radio("¿Angina inducida por ejercicio?", [0,1], format_func=lambda x: f"{'✅ Sí' if x == 1 else '❌ No'}")
     oldpeak = st.number_input("Oldpeak", min_value=0.0, max_value=10.0, step=0.1)
     pendiente = st.selectbox("Pendiente del ST", [0,1,2])
     vasos = st.selectbox("Número de vasos mayores", [0,1,2,3])
-    thal = st.selectbox("Tipo de talasemia (Thal)", [0, 1, 2, 3])
 
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Predicción
 if st.button("🔍 Predecir estado de salud"):
-    campos = [edad, genero, dolor_pecho, presion, colesterol, azucar, electro, frecuencia, angina, oldpeak, pendiente, vasos, thal]
+    campos = [edad, genero, dolor_pecho, presion, colesterol, azucar, electro, frecuencia, angina, oldpeak, pendiente, vasos]
     if all(v is not None for v in campos):
         entrada = np.array([campos])
         try:
@@ -141,4 +157,3 @@ if st.button("🔍 Predecir estado de salud"):
             st.error(f"Ocurrió un error al procesar los datos: {e}")
     else:
         st.warning("⚠️ Por favor completa todos los campos antes de predecir.")
-
