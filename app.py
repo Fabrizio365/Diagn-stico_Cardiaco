@@ -7,7 +7,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
-# ------------------------ ENTRENAMIENTO DIRECTo ------------------------
+# ------------------------ ENTRENAMIENTO DIRECTO ------------------------
 @st.cache_data
 def cargar_datos():
     df = pd.read_csv("Cardiovascular_Disease_Dataset.csv")
@@ -98,28 +98,47 @@ if not st.session_state.formulario:
     st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
-# Sidebar con info
+# Sidebar con glosario de variables
 with st.sidebar:
     st.image("imagen_logo.png")
-    with st.expander("ℹ️ Información de las variables", expanded=False):
+    with st.expander("ℹ️ Glosario de variables del formulario", expanded=False):
         st.markdown("""
-        <ul style='font-size: 15px;'>
-            <li><b>Edad:</b> Años cumplidos del paciente, importante para evaluar riesgos según la etapa de vida.</li>
-            <li><b>Género:</b> 0 = Femenino, 1 = Masculino. Se usa para identificar diferencias biológicas relevantes en diagnósticos.</li>
-            <li><b>Tipo de dolor torácico:</b> Clasificación del dolor en el pecho, que puede indicar desde molestias leves hasta signos de enfermedad cardíaca.</li>
-            <li><b>Presión arterial en reposo:</b> Medida de la fuerza que ejerce la sangre contra las paredes de las arterias cuando el cuerpo está en reposo.</li>
-            <li><b>Colesterol sérico:</b> Nivel de colesterol en la sangre; valores altos pueden aumentar el riesgo cardiovascular.</li>
-            <li><b>Glucosa en ayunas:</b> Nivel de azúcar en sangre tras un ayuno de al menos 8 horas. Un valor >120 mg/dL puede indicar prediabetes o diabetes.</li>
-            <li><b>Electrocardiograma (ECG) en reposo:</b> Registro de la actividad eléctrica del corazón sin esfuerzo físico. Detecta arritmias o signos de daño cardíaco.</li>
-            <li><b>Frecuencia cardíaca máxima:</b> El número más alto de latidos por minuto alcanzado durante el ejercicio. Ayuda a evaluar la respuesta del corazón al esfuerzo.</li>
-            <li><b>Angina inducida por ejercicio:</b> Dolor en el pecho provocado por el esfuerzo físico, señal de posible obstrucción coronaria.</li>
-            <li><b>Oldpeak:</b> Descenso del segmento ST en el ECG durante el ejercicio. Puede indicar isquemia (falta de oxígeno en el corazón).</li>
-            <li><b>Pendiente del ST:</b> Forma en que cambia el segmento ST tras el ejercicio. Su patrón ayuda a interpretar el riesgo cardíaco.</li>
-            <li><b>N.º de vasos principales:</b> Número de arterias coronarias principales con flujo sanguíneo visible mediante fluoroscopía. Cuantos más estén afectados, mayor el riesgo.</li>
+        <ul style='font-size: 15px; line-height: 1.6;'>
+            <li><b>Edad:</b> Años que tiene el paciente.</li>
+            <li><b>Género:</b> <b>0</b> para mujer, <b>1</b> para hombre.</li>
+            <li><b>Tipo de dolor en el pecho:</b> 
+                <ul>
+                    <li><b>0:</b> Angina típica (relacionada al esfuerzo)</li>
+                    <li><b>1:</b> Angina atípica</li>
+                    <li><b>2:</b> Dolor no anginoso</li>
+                    <li><b>3:</b> Asintomático (sin dolor)</li>
+                </ul>
+            </li>
+            <li><b>Presión arterial en reposo:</b> Presión sistólica (valor alto) mientras el paciente está en reposo (mmHg).</li>
+            <li><b>Nivel de colesterol sérico:</b> Cantidad total de colesterol en sangre (mg/dL).</li>
+            <li><b>¿Azúcar en ayunas &gt; 120?</b> Indica si el nivel de glucosa en ayunas es mayor a 120 mg/dL. <b>1 = Sí</b>, <b>0 = No</b>.</li>
+            <li><b>Electrocardiograma en reposo:</b>
+                <ul>
+                    <li><b>0:</b> Normal</li>
+                    <li><b>1:</b> Anomalía ST-T (posible isquemia)</li>
+                    <li><b>2:</b> Hipertrofia ventricular izquierda</li>
+                </ul>
+            </li>
+            <li><b>Frecuencia cardíaca máxima:</b> Mayor número de latidos por minuto alcanzado durante una prueba de esfuerzo.</li>
+            <li><b>¿Angina inducida por ejercicio?:</b> Dolor en el pecho durante el esfuerzo físico. <b>1 = Sí</b>, <b>0 = No</b>.</li>
+            <li><b>Oldpeak:</b> Descenso del segmento ST en el ECG durante ejercicio. Valores más altos pueden indicar isquemia (falta de oxígeno).</li>
+            <li><b>Pendiente del ST:</b> Forma de la curva ST en el ECG:
+                <ul>
+                    <li><b>0:</b> Descendente (riesgo alto)</li>
+                    <li><b>1:</b> Plana (riesgo medio)</li>
+                    <li><b>2:</b> Ascendente (normal)</li>
+                </ul>
+            </li>
+            <li><b>Número de vasos mayores:</b> Cantidad de vasos sanguíneos principales (de 0 a 3) observados con contraste médico.</li>
         </ul>
         """, unsafe_allow_html=True)
 
-# Formulario
+# Formulario principal
 with st.container():
     st.markdown("<div class='fade-transition form-container'>", unsafe_allow_html=True)
     st.title("🧾 Formulario de Evaluación")
@@ -128,20 +147,20 @@ col1, col2, col3 = st.columns(3)
 with col1:
     edad = st.number_input("Edad", min_value=1, max_value=120, step=1)
     genero = st.selectbox("Género", [0, 1], format_func=lambda x: "Femenino" if x == 0 else "Masculino")
-    dolor_pecho = st.selectbox("Tipo de dolor en el pecho", [0,1,2,3])
+    dolor_pecho = st.selectbox("Tipo de dolor en el pecho", [0, 1, 2, 3])
     presion = st.number_input("Presión arterial en reposo", min_value=80, max_value=200)
 
 with col2:
     colesterol = st.number_input("Nivel de colesterol sérico", min_value=100, max_value=600)
     azucar = st.radio("¿Azúcar en ayunas > 120?", [0, 1], format_func=lambda x: f"{'✅ Sí' if x == 1 else '❌ No'}")
-    electro = st.selectbox("Electrocardiograma en reposo", [0,1,2])
+    electro = st.selectbox("Electrocardiograma en reposo", [0, 1, 2])
     frecuencia = st.number_input("Frecuencia cardiaca máxima", min_value=60, max_value=250)
 
 with col3:
-    angina = st.radio("¿Angina inducida por ejercicio?", [0,1], format_func=lambda x: f"{'✅ Sí' if x == 1 else '❌ No'}")
+    angina = st.radio("¿Angina inducida por ejercicio?", [0, 1], format_func=lambda x: f"{'✅ Sí' if x == 1 else '❌ No'}")
     oldpeak = st.number_input("Oldpeak", min_value=0.0, max_value=10.0, step=0.1)
-    pendiente = st.selectbox("Pendiente del ST", [0,1,2])
-    vasos = st.selectbox("Número de vasos mayores", [0,1,2,3])
+    pendiente = st.selectbox("Pendiente del ST", [0, 1, 2])
+    vasos = st.selectbox("Número de vasos mayores", [0, 1, 2, 3])
 
 st.markdown("</div>", unsafe_allow_html=True)
 
