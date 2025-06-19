@@ -34,6 +34,11 @@ st.set_page_config(page_title="Predicción Cardiovascular", layout="wide")
 
 st.markdown("""
     <style>
+        html, body, [class*="css"]  {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(to bottom right, #8B0000, #FF6347);
+            color: white;
+        }
         .fade-transition {
             animation: fadeForm 1s ease-in-out;
         }
@@ -51,6 +56,7 @@ st.markdown("""
         .custom-yes { background-color: #c8e6c9; border-radius: 5px; padding: 5px; color: #256029; font-weight: bold; }
         .custom-no { background-color: #ffcdd2; border-radius: 5px; padding: 5px; color: #b71c1c; font-weight: bold; }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
 """, unsafe_allow_html=True)
 
 if "formulario" not in st.session_state:
@@ -60,7 +66,7 @@ if not st.session_state.formulario:
     colA, colB = st.columns([2, 1])
     with colA:
         st.markdown("""
-            <div class='fade-in' style='background: linear-gradient(to right, #ff4d4d, #ff9999); padding: 2rem; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.2); color: white;'>
+            <div class='fade-in' style='padding: 2rem; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.2);'>
             <h2 style='text-shadow: 2px 2px 4px #000000;'>🫀 Bienvenido a la Evaluación de Riesgo Cardiovascular</h2>
             <p><strong>Nuestro Aporte:</strong><br>
             Se empleará una combinación de tres de los algoritmos más efectivos (<b>Árbol de Decisión</b>, <b>K-Nearest Neighbors</b> y <b>Random Forest</b>) junto con una técnica de ensamblaje (<em>Ensemble</em>) para optimizar sus fortalezas y mitigar los posibles sesgos o variaciones inherentes a cada modelo individual.</p>
@@ -72,11 +78,6 @@ if not st.session_state.formulario:
         st.image("imagen_logo.png", width=300)
 
     st.markdown("""
-    <style>
-        .start-button {
-            animation: fadeIn 1s ease-in-out;
-        }
-    </style>
     <div class="start-button">
     """, unsafe_allow_html=True)
     if st.button("🧪 Iniciar Evaluación", key="iniciar"):
@@ -87,9 +88,7 @@ if not st.session_state.formulario:
 
 # Sidebar con info
 with st.sidebar:
-    st.markdown('<div class="sidebar-logo">', unsafe_allow_html=True)
     st.image("imagen_logo.png")
-    st.markdown('</div>', unsafe_allow_html=True)
     with st.expander("ℹ️ Información de las variables", expanded=False):
         st.markdown("""
         <ul style='font-size: 15px;'>
