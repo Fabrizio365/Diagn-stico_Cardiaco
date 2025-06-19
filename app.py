@@ -89,7 +89,7 @@ with st.sidebar:
     st.image("imagen_logo.png")
     st.markdown('</div>', unsafe_allow_html=True)
     with st.expander("ℹ️ Información de las variables", expanded=False):
-        st.markdown("Edad, Género, Tipo de dolor en el pecho, Presión, Colesterol, Azúcar en ayunas, ECG, Frecuencia máxima, Angina, Oldpeak, Pendiente del ST, Vasos")
+        st.markdown("Edad, Género, Tipo de dolor en el pecho, Presión, Colesterol, Azúcar en ayunas, ECG, Frecuencia máxima, Angina, Oldpeak, Pendiente del ST, Vasos, Tipo de talasemia")
 
 # Formulario
 with st.container():
@@ -114,12 +114,13 @@ with col3:
     oldpeak = st.number_input("Oldpeak", min_value=0.0, max_value=10.0, step=0.1)
     pendiente = st.selectbox("Pendiente del ST", [0,1,2])
     vasos = st.selectbox("Número de vasos mayores", [0,1,2,3])
+    thal = st.selectbox("Tipo de talasemia (Thal)", [0, 1, 2, 3])
 
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Predicción
 if st.button("🔍 Predecir estado de salud"):
-    campos = [edad, genero, dolor_pecho, presion, colesterol, azucar, electro, frecuencia, angina, oldpeak, pendiente, vasos]
+    campos = [edad, genero, dolor_pecho, presion, colesterol, azucar, electro, frecuencia, angina, oldpeak, pendiente, vasos, thal]
     if all(v is not None for v in campos):
         entrada = np.array([campos])
         try:
@@ -140,3 +141,4 @@ if st.button("🔍 Predecir estado de salud"):
             st.error(f"Ocurrió un error al procesar los datos: {e}")
     else:
         st.warning("⚠️ Por favor completa todos los campos antes de predecir.")
+
