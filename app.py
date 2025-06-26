@@ -31,35 +31,13 @@ modelo.fit(X_train, y_train)
 # --------------------------- INTERFAZ STREAMLIT ---------------------------
 st.set_page_config(page_title="Predicción Cardiovascular", layout="wide")
 
-color_fondo_bienvenida = "linear-gradient(to bottom right, #8B0000, #FF6347);"
-color_fondo_formulario = "linear-gradient(to right, #003366, #004080);"
-
-if "formulario" not in st.session_state:
-    st.session_state.formulario = False
-
-if not st.session_state.formulario:
-    st.markdown(f"""
-        <style>
-        html, body, [class*="css"]  {{
-            font-family: 'Open Sans', sans-serif;
-            background: {color_fondo_bienvenida};
-            color: white;
-        }}
-        </style>
-    """, unsafe_allow_html=True)
-else:
-    st.markdown(f"""
-        <style>
-        html, body, [class*="css"]  {{
-            font-family: 'Open Sans', sans-serif;
-            background: {color_fondo_formulario};
-            color: white;
-        }}
-        </style>
-    """, unsafe_allow_html=True)
-
 st.markdown("""
     <style>
+        html, body, [class*="css"]  {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(to bottom right, #8B0000, #FF6347);
+            color: white;
+        }
         .fade-transition {
             animation: fadeForm 1s ease-in-out;
         }
@@ -75,20 +53,39 @@ st.markdown("""
             100% { opacity: 1; transform: translateY(0); }
         }
         .form-container {
+            animation: rgbGlow 5s infinite alternate;
             border-radius: 15px;
             padding: 20px;
             background: rgba(255, 255, 255, 0.05);
         }
+        @keyframes rgbGlow {
+            0% { box-shadow: 0 0 15px red; }
+            33% { box-shadow: 0 0 15px green; }
+            66% { box-shadow: 0 0 15px blue; }
+            100% { box-shadow: 0 0 15px red; }
+        }
+        .rgb-text {
+            animation: rgbText 5s infinite alternate;
+        }
+        @keyframes rgbText {
+            0% { text-shadow: 0 0 5px red; color: red; }
+            33% { text-shadow: 0 0 5px green; color: green; }
+            66% { text-shadow: 0 0 5px blue; color: blue; }
+            100% { text-shadow: 0 0 5px red; color: red; }
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
 """, unsafe_allow_html=True)
+
+if "formulario" not in st.session_state:
+    st.session_state.formulario = False
 
 if not st.session_state.formulario:
     colA, colB = st.columns([2, 1])
     with colA:
         st.markdown("""
             <div class='fade-in' style='padding: 2rem; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.2);'>
-            <h2 style='color: white;'>🫀 Bienvenido a la Evaluación de Riesgo Cardiovascular</h2>
+            <h2 class='rgb-text'>🫀 Bienvenido a la Evaluación de Riesgo Cardiovascular</h2>
             <p style='font-size:18px;'>
             Este sistema predictivo usa <strong>inteligencia artificial</strong> para evaluar el riesgo de enfermedades cardíacas en función de tus datos clínicos.
             </p>
@@ -186,4 +183,3 @@ if st.button("🔍 Predecir estado de salud"):
             st.error(f"Ocurrió un error al procesar los datos: {e}")
     else:
         st.warning("⚠️ Por favor completa todos los campos antes de predecir.")
-
