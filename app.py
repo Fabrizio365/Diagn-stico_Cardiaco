@@ -1,13 +1,9 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import VotingClassifier, RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
+import joblib
 
-# ------------------------ ENTRENAMIENTO DIRECTO ------------------------
+# ------------------------ CARGA MODELO YA ENTRENADO ------------------------
 @st.cache_data
 def cargar_datos():
     df = pd.read_csv("Cardiovascular_Disease_Dataset.csv")
@@ -15,19 +11,14 @@ def cargar_datos():
     y = df["target"]
     return X, y
 
+@st.cache_resource
+def cargar_modelos():
+    modelo = joblib.load("modelo_hard_voting.pkl")
+    scaler = joblib.load("scaler.pkl")
+    return modelo, scaler
+
 X, y = cargar_datos()
-
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3)
-
-# Modelos base
-dt = DecisionTreeClassifier(max_depth=20, criterion='gini', min_samples_leaf=5, splitter='random')
-knn = KNeighborsClassifier(n_neighbors=10, weights='distance')
-rf = RandomForestClassifier(n_estimators=25, criterion='gini', max_features='sqrt')
-
-modelo = VotingClassifier(estimators=[('dt', dt), ('knn', knn), ('rf', rf)], voting='hard')
-modelo.fit(X_train, y_train)
+modelo, scaler = cargar_modelos()
 
 # --------------------------- INTERFAZ STREAMLIT ---------------------------
 st.set_page_config(page_title="Predicción Cardiovascular", layout="wide")
@@ -65,8 +56,15 @@ st.markdown("""
             66% { box-shadow: 0 0 15px blue; }
             100% { box-shadow: 0 0 15px red; }
         }
-        .custom-yes { background-color: #c8e6c9; border-radius: 5px; padding: 5px; color: #256029; font-weight: bold; }
-        .custom-no { background-color: #ffcdd2; border-radius: 5px; padding: 5px; color: #b71c1c; font-weight: bold; }
+        .rgb-text {
+            animation: rgbText 5s infinite alternate;
+        }
+        @keyframes rgbText {
+            0% { text-shadow: 0 0 5px red; color: red; }
+            33% { text-shadow: 0 0 5px green; color: green; }
+            66% { text-shadow: 0 0 5px blue; color: blue; }
+            100% { text-shadow: 0 0 5px red; color: red; }
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
 """, unsafe_allow_html=True)
@@ -79,19 +77,26 @@ if not st.session_state.formulario:
     with colA:
         st.markdown("""
             <div class='fade-in' style='padding: 2rem; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.2);'>
-            <h2 style='text-shadow: 2px 2px 4px #000000;'>🫀 Bienvenido a la Evaluación de Riesgo Cardiovascular</h2>
-            <p><strong>Nuestro Aporte:</strong><br>
-            Se empleará una combinación de tres de los algoritmos más efectivos (<b>Árbol de Decisión</b>, <b>K-Nearest Neighbors</b> y <b>Random Forest</b>) junto con una técnica de ensamblaje (<em>Ensemble</em>) para optimizar sus fortalezas y mitigar los posibles sesgos o variaciones inherentes a cada modelo individual.</p>
-            <p>La técnica de ensamblaje seleccionada será la <b>Votación Mayoritaria (Hard Voting)</b>, que ofrece la ventaja de reducir el riesgo de sobreajuste asociado a un único modelo, particularmente relevante en el caso del Árbol de Decisión, que podría alcanzar una precisión del 100%, lo que indicaría un posible sobreajuste.</p>
-            <blockquote>Las enfermedades cardíacas son la principal causa de muerte a nivel mundial. Nuestro objetivo es acercar la ciencia y la inteligencia artificial a la salud preventiva.</blockquote>
+            <h2 class='rgb-text'>🪀 Bienvenido a la Evaluación de Riesgo Cardiovascular</h2>
+            <p style='font-size:17px; line-height:1.6;'>
+            <strong>¿Qué es esto?</strong><br>
+            Esta herramienta usa inteligencia artificial para ayudarte a saber si tienes un riesgo alto o bajo de enfermedad al corazón.
+            </p>
+            <p style='font-size:17px; line-height:1.6;'>
+            <strong>¿Cómo funciona?</strong><br>
+            Combina tres métodos inteligentes: <b>Árbol de Decisión</b>, <b>K-Nearest Neighbors</b> y <b>Gradient Boosting</b>, y juntos toman una decisión final como equipo.
+            </p>
+            <p style='font-size:17px; line-height:1.6;'>
+            <strong>¿Por qué importa?</strong><br>
+            Porque conocer tu salud cardiovascular te ayuda a tomar decisiones antes de que sea tarde. Esto <b>no reemplaza a un médico</b>, pero sí puede ayudarte a saber si necesitas uno pronto.
+            </p>
+            <blockquote style='font-size:16px;'>💖 Prevenir es vivir. Cuida tu corazón desde hoy.</blockquote>
             </div>
         """, unsafe_allow_html=True)
     with colB:
         st.image("imagen_logo.png", width=300)
 
-    st.markdown("""
-    <div class="start-button">
-    """, unsafe_allow_html=True)
+    st.markdown("<div class='start-button'>", unsafe_allow_html=True)
     if st.button("🧪 Iniciar Evaluación", key="iniciar"):
         st.session_state.formulario = True
         st.rerun()
@@ -116,7 +121,7 @@ with st.sidebar:
             </li>
             <li><b>Presión arterial en reposo:</b> Presión sistólica (valor alto) mientras el paciente está en reposo (mmHg).</li>
             <li><b>Nivel de colesterol sérico:</b> Cantidad total de colesterol en sangre (mg/dL).</li>
-            <li><b>¿Azúcar en ayunas &gt; 120?</b> Indica si el nivel de glucosa en ayunas es mayor a 120 mg/dL. <b>1 = Sí</b>, <b>0 = No</b>.</li>
+            <li><b>¿Azúcar en ayunas &gt; 120?</b> <b>1 = Sí</b>, <b>0 = No</b>.</li>
             <li><b>Electrocardiograma en reposo:</b>
                 <ul>
                     <li><b>0:</b> Normal</li>
@@ -124,24 +129,24 @@ with st.sidebar:
                     <li><b>2:</b> Hipertrofia ventricular izquierda</li>
                 </ul>
             </li>
-            <li><b>Frecuencia cardíaca máxima:</b> Mayor número de latidos por minuto alcanzado durante una prueba de esfuerzo.</li>
-            <li><b>¿Angina inducida por ejercicio?:</b> Dolor en el pecho durante el esfuerzo físico. <b>1 = Sí</b>, <b>0 = No</b>.</li>
-            <li><b>Oldpeak:</b> Descenso del segmento ST en el ECG durante ejercicio. Valores más altos pueden indicar isquemia (falta de oxígeno).</li>
-            <li><b>Pendiente del ST:</b> Forma de la curva ST en el ECG:
+            <li><b>Frecuencia cardiaca máxima:</b> Mayor número de latidos durante esfuerzo.</li>
+            <li><b>¿Angina inducida por ejercicio?:</b> Dolor en el pecho al hacer ejercicio.</li>
+            <li><b>Oldpeak:</b> Descenso del ST en ECG. Valores altos = posible isquemia.</li>
+            <li><b>Pendiente del ST:</b> Forma de la curva ST en ECG:
                 <ul>
                     <li><b>0:</b> Descendente (riesgo alto)</li>
                     <li><b>1:</b> Plana (riesgo medio)</li>
                     <li><b>2:</b> Ascendente (normal)</li>
                 </ul>
             </li>
-            <li><b>Número de vasos mayores:</b> Cantidad de vasos sanguíneos principales (de 0 a 3) observados con contraste médico.</li>
+            <li><b>Número de vasos mayores:</b> Cantidad observada con contraste (de 0 a 3).</li>
         </ul>
         """, unsafe_allow_html=True)
 
 # Formulario principal
 with st.container():
     st.markdown("<div class='fade-transition form-container'>", unsafe_allow_html=True)
-    st.title("🧾 Formulario de Evaluación")
+    st.title("📜 Formulario de Evaluación")
 
 col1, col2, col3 = st.columns(3)
 with col1:
