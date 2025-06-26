@@ -1,9 +1,13 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import joblib
+from sklearn.ensemble import VotingClassifier, GradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 
-# ------------------------ CARGA DE DATOS Y MODELO ------------------------
+# ------------------------ ENTRENAMIENTO DIRECTO ------------------------
 @st.cache_data
 def cargar_datos():
     df = pd.read_csv("Cardiovascular_Disease_Dataset.csv")
@@ -11,14 +15,18 @@ def cargar_datos():
     y = df["target"]
     return X, y
 
-@st.cache_resource
-def cargar_modelos():
-    modelo = joblib.load("modelo_hard_voting.pkl")
-    scaler = joblib.load("scaler.pkl")
-    return modelo, scaler
-
 X, y = cargar_datos()
-modelo, scaler = cargar_modelos()
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3)
+
+# Modelos base
+dt = DecisionTreeClassifier(max_depth=20, criterion='gini', min_samples_leaf=5, splitter='random')
+knn = KNeighborsClassifier(n_neighbors=10, weights='distance')
+gb = GradientBoostingClassifier(n_estimators=50, learning_rate=0.1)
+
+modelo = VotingClassifier(estimators=[('dt', dt), ('knn', knn), ('gb', gb)], voting='hard')
+modelo.fit(X_train, y_train)
 
 # --------------------------- INTERFAZ STREAMLIT ---------------------------
 st.set_page_config(page_title="Predicción Cardiovascular", layout="wide")
