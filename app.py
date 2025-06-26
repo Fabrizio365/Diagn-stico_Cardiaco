@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import joblib
 
-# ------------------------ CARGA MODELO YA ENTRENADO ------------------------
+# ------------------------ CARGA DE DATOS Y MODELO ------------------------
 @st.cache_data
 def cargar_datos():
     df = pd.read_csv("Cardiovascular_Disease_Dataset.csv")
@@ -77,33 +77,28 @@ if not st.session_state.formulario:
     with colA:
         st.markdown("""
             <div class='fade-in' style='padding: 2rem; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.2);'>
-            <h2 class='rgb-text'>🪀 Bienvenido a la Evaluación de Riesgo Cardiovascular</h2>
-            <p style='font-size:17px; line-height:1.6;'>
-            <strong>¿Qué es esto?</strong><br>
-            Esta herramienta usa inteligencia artificial para ayudarte a saber si tienes un riesgo alto o bajo de enfermedad al corazón.
+            <h2 class='rgb-text'>🫀 Bienvenido a la Evaluación de Riesgo Cardiovascular</h2>
+            <p style='font-size:18px;'>
+            Este sistema predictivo usa <strong>inteligencia artificial</strong> para evaluar el riesgo de enfermedades cardíacas en función de tus datos clínicos.
             </p>
-            <p style='font-size:17px; line-height:1.6;'>
-            <strong>¿Cómo funciona?</strong><br>
-            Combina tres métodos inteligentes: <b>Árbol de Decisión</b>, <b>K-Nearest Neighbors</b> y <b>Gradient Boosting</b>, y juntos toman una decisión final como equipo.
-            </p>
-            <p style='font-size:17px; line-height:1.6;'>
+            <p><strong>¿Cómo funciona?</strong><br>
+            Se combinan tres modelos: <b>Árbol de Decisión</b>, <b>K-Nearest Neighbors</b> y <b>Gradient Boosting</b> usando <em>Ensemble Learning</em> (votación mayoritaria). Esto nos permite tomar decisiones más precisas y seguras al integrar la lógica de varios algoritmos.</p>
+            <p style='font-size:17px;'>
             <strong>¿Por qué importa?</strong><br>
-            Porque conocer tu salud cardiovascular te ayuda a tomar decisiones antes de que sea tarde. Esto <b>no reemplaza a un médico</b>, pero sí puede ayudarte a saber si necesitas uno pronto.
+            Las enfermedades del corazón son la causa #1 de muerte en el mundo 🌎. Anticipar el riesgo permite tomar acciones preventivas antes de que aparezcan síntomas.
             </p>
-            <blockquote style='font-size:16px;'>💖 Prevenir es vivir. Cuida tu corazón desde hoy.</blockquote>
+            <blockquote style='font-size:15px;'>❗ Nota: Este sistema no reemplaza una consulta médica. Es una herramienta educativa y preventiva.</blockquote>
             </div>
         """, unsafe_allow_html=True)
     with colB:
         st.image("imagen_logo.png", width=300)
 
-    st.markdown("<div class='start-button'>", unsafe_allow_html=True)
     if st.button("🧪 Iniciar Evaluación", key="iniciar"):
         st.session_state.formulario = True
         st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
-# Sidebar con glosario de variables
+# SIDEBAR GLOSARIO
 with st.sidebar:
     st.image("imagen_logo.png")
     with st.expander("ℹ️ Glosario de variables del formulario", expanded=False):
@@ -119,34 +114,22 @@ with st.sidebar:
                     <li><b>3:</b> Asintomático (sin dolor)</li>
                 </ul>
             </li>
-            <li><b>Presión arterial en reposo:</b> Presión sistólica (valor alto) mientras el paciente está en reposo (mmHg).</li>
-            <li><b>Nivel de colesterol sérico:</b> Cantidad total de colesterol en sangre (mg/dL).</li>
-            <li><b>¿Azúcar en ayunas &gt; 120?</b> <b>1 = Sí</b>, <b>0 = No</b>.</li>
-            <li><b>Electrocardiograma en reposo:</b>
-                <ul>
-                    <li><b>0:</b> Normal</li>
-                    <li><b>1:</b> Anomalía ST-T (posible isquemia)</li>
-                    <li><b>2:</b> Hipertrofia ventricular izquierda</li>
-                </ul>
-            </li>
-            <li><b>Frecuencia cardiaca máxima:</b> Mayor número de latidos durante esfuerzo.</li>
-            <li><b>¿Angina inducida por ejercicio?:</b> Dolor en el pecho al hacer ejercicio.</li>
-            <li><b>Oldpeak:</b> Descenso del ST en ECG. Valores altos = posible isquemia.</li>
-            <li><b>Pendiente del ST:</b> Forma de la curva ST en ECG:
-                <ul>
-                    <li><b>0:</b> Descendente (riesgo alto)</li>
-                    <li><b>1:</b> Plana (riesgo medio)</li>
-                    <li><b>2:</b> Ascendente (normal)</li>
-                </ul>
-            </li>
-            <li><b>Número de vasos mayores:</b> Cantidad observada con contraste (de 0 a 3).</li>
+            <li><b>Presión arterial en reposo:</b> Valor de presión cuando el paciente está en descanso (mmHg).</li>
+            <li><b>Colesterol sérico:</b> Cantidad de colesterol total en sangre (mg/dL).</li>
+            <li><b>¿Azúcar en ayunas > 120?:</b> Nivel alto de glucosa antes del desayuno.</li>
+            <li><b>Electrocardiograma en reposo:</b> Evaluación de la actividad eléctrica del corazón sin esfuerzo.</li>
+            <li><b>Frecuencia cardíaca máxima:</b> Máximo de pulsaciones por minuto en una prueba de esfuerzo.</li>
+            <li><b>¿Angina inducida?:</b> Dolor en el pecho causado por el ejercicio.</li>
+            <li><b>Oldpeak:</b> Descenso del segmento ST observado durante ejercicio (riesgo de isquemia).</li>
+            <li><b>Pendiente del ST:</b> Forma que toma la curva ST en el ECG, indica el pronóstico.</li>
+            <li><b>Número de vasos mayores:</b> Vasos sanguíneos principales detectados en angiografía (0 a 3).</li>
         </ul>
         """, unsafe_allow_html=True)
 
-# Formulario principal
+# FORMULARIO
 with st.container():
     st.markdown("<div class='fade-transition form-container'>", unsafe_allow_html=True)
-    st.title("📜 Formulario de Evaluación")
+    st.title("🧾 Formulario de Evaluación")
 
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -156,10 +139,10 @@ with col1:
     presion = st.number_input("Presión arterial en reposo", min_value=80, max_value=200)
 
 with col2:
-    colesterol = st.number_input("Nivel de colesterol sérico", min_value=100, max_value=600)
+    colesterol = st.number_input("Colesterol sérico", min_value=100, max_value=600)
     azucar = st.radio("¿Azúcar en ayunas > 120?", [0, 1], format_func=lambda x: f"{'✅ Sí' if x == 1 else '❌ No'}")
     electro = st.selectbox("Electrocardiograma en reposo", [0, 1, 2])
-    frecuencia = st.number_input("Frecuencia cardiaca máxima", min_value=60, max_value=250)
+    frecuencia = st.number_input("Frecuencia cardíaca máxima", min_value=60, max_value=250)
 
 with col3:
     angina = st.radio("¿Angina inducida por ejercicio?", [0, 1], format_func=lambda x: f"{'✅ Sí' if x == 1 else '❌ No'}")
@@ -169,7 +152,7 @@ with col3:
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# Predicción
+# PREDICCIÓN
 if st.button("🔍 Predecir estado de salud"):
     campos = [edad, genero, dolor_pecho, presion, colesterol, azucar, electro, frecuencia, angina, oldpeak, pendiente, vasos]
     if all(v is not None for v in campos):
