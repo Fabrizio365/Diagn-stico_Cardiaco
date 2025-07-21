@@ -508,21 +508,19 @@ if not st.session_state.formulario:
         )
         
         if uploaded_file is not None:
-                with st.expander("📋 **Requisitos del archivo CSV**", expanded=True):
-                    st.markdown("#### 📝 Estructura Requerida:")
-                    
-                    st.markdown("**Columna obligatoria:** `target` (0 = saludable, 1 = riesgo)")
-                    st.markdown("**Columnas opcionales a omitir:** `patientid` o identificadores similares")
-                    st.markdown("**Todas las demás columnas deben ser numéricas**")
-                    st.markdown("**Formato:** CSV separado por comas")
-                    
-                    st.markdown("#### 💡 Ejemplo de estructura:")
-                    st.code("""
-edad,genero,presion,colesterol,target
+            with st.expander("📋 **Requisitos del archivo CSV**", expanded=True):
+                st.markdown("#### 📝 Estructura Requerida:")
+                
+                st.markdown("**Columna obligatoria:** `target` (0 = saludable, 1 = riesgo)")
+                st.markdown("**Columnas opcionales a omitir:** `patientid` o identificadores similares")
+                st.markdown("**Todas las demás columnas deben ser numéricas**")
+                st.markdown("**Formato:** CSV separado por comas")
+                
+                st.markdown("#### 💡 Ejemplo de estructura:")
+                st.code("""edad,genero,presion,colesterol,target
 45,1,120,200,0
 60,0,140,250,1
-52,1,130,180,0
-                    """, language="csv")
+52,1,130,180,0""", language="csv")
             
             # Procesar archivo subido
             X, y, df = procesar_csv_subido(uploaded_file)
