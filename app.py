@@ -446,44 +446,45 @@ if not st.session_state.formulario:
             """, unsafe_allow_html=True)
     
     with col2:
+        # Usar imagen o emoji como fallback
         try:
             st.image("imagen_logo.png", width=350)
         except:
-            st.markdown("""
-                <div class="algorithm-card" style="text-align: center; min-height: 300px; display: flex; align-items: center; justify-content: center;">
-                    <div>
-                        <div style="font-size: 5rem;">🏥</div>
-                        <h3>CardioPredict AI</h3>
-                        <p>Logo del Sistema</p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
+            # Crear un logo visual simple con componentes nativos
+            st.markdown("### 🏥")
+            st.markdown("#### CardioPredict AI")
+            st.markdown("**Machine Learning para la Salud del Corazón**")
     
-    # SECCIÓN DE HARD VOTING
+    # SECCIÓN DE HARD VOTING - Usando componentes nativos
+    st.markdown("---")
+    st.markdown("## 🗳️ ¿Cómo Funciona el Hard Voting?")
+    
+    # Crear tres columnas para los algoritmos
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("### 🌲")
+        st.markdown("**Random Forest**")
+        st.markdown("Voto: Riesgo/Saludable")
+    
+    with col2:
+        st.markdown("### 🚀") 
+        st.markdown("**Gradient Boosting**")
+        st.markdown("Voto: Riesgo/Saludable")
+    
+    with col3:
+        st.markdown("### 🎯")
+        st.markdown("**SVM**")
+        st.markdown("Voto: Riesgo/Saludable")
+    
+    st.markdown("---")
+    
+    # Explicación de la decisión por mayoría
+    st.markdown("### ⚖️ Decisión por Mayoría")
     st.markdown("""
-        <div class="form-container fade-in">
-            <h2 style="text-align: center; margin-bottom: 2rem;">🗳️ ¿Cómo Funciona el Hard Voting?</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                <div style="text-align: center;">
-                    <div style="font-size: 3rem;">🌲</div>
-                    <p><strong>Random Forest</strong><br>Voto: Riesgo/Saludable</p>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 3rem;">🚀</div>
-                    <p><strong>Gradient Boosting</strong><br>Voto: Riesgo/Saludable</p>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 3rem;">🎯</div>
-                    <p><strong>SVM</strong><br>Voto: Riesgo/Saludable</p>
-                </div>
-            </div>
-            <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px;">
-                <h3>⚖️ Decisión por Mayoría</h3>
-                <p>La predicción final se basa en el voto de la mayoría de los tres algoritmos, 
-                asegurando mayor confiabilidad y reduciendo errores individuales.</p>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    La predicción final se basa en el voto de la mayoría de los tres algoritmos, 
+    asegurando mayor confiabilidad y reduciendo errores individuales.
+    """)
 
     # SECCIÓN DE CARGA DE DATOS
     st.markdown("---")
@@ -507,25 +508,21 @@ if not st.session_state.formulario:
         )
         
         if uploaded_file is not None:
-            with st.expander("📋 **Requisitos del archivo CSV**", expanded=True):
-                st.markdown("""
-                <div class="algorithm-card">
-                    <h4>📝 Estructura Requerida:</h4>
-                    <ul>
-                        <li><strong>Columna obligatoria:</strong> <code>target</code> (0 = saludable, 1 = riesgo)</li>
-                        <li><strong>Columnas opcionales a omitir:</strong> <code>patientid</code> o identificadores similares</li>
-                        <li><strong>Todas las demás columnas deben ser numéricas</strong></li>
-                        <li><strong>Formato:</strong> CSV separado por comas</li>
-                    </ul>
+                with st.expander("📋 **Requisitos del archivo CSV**", expanded=True):
+                    st.markdown("#### 📝 Estructura Requerida:")
                     
-                    <h4>💡 Ejemplo de estructura:</h4>
-                    <pre style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; overflow-x: auto;">
+                    st.markdown("**Columna obligatoria:** `target` (0 = saludable, 1 = riesgo)")
+                    st.markdown("**Columnas opcionales a omitir:** `patientid` o identificadores similares")
+                    st.markdown("**Todas las demás columnas deben ser numéricas**")
+                    st.markdown("**Formato:** CSV separado por comas")
+                    
+                    st.markdown("#### 💡 Ejemplo de estructura:")
+                    st.code("""
 edad,genero,presion,colesterol,target
 45,1,120,200,0
 60,0,140,250,1
-52,1,130,180,0</pre>
-                </div>
-                """, unsafe_allow_html=True)
+52,1,130,180,0
+                    """, language="csv")
             
             # Procesar archivo subido
             X, y, df = procesar_csv_subido(uploaded_file)
@@ -845,34 +842,18 @@ with st.sidebar:
         """, unsafe_allow_html=True)
     
     st.markdown("### 🤖 Hard Voting Ensemble")
-    st.markdown("""
-        <div class="algorithm-card">
-            <h4>🎯 Algoritmos Utilizados:</h4>
-            <div style="margin: 1rem 0;">
-                <div style="padding: 0.5rem 0; border-left: 3px solid #ff6b6b; padding-left: 1rem; margin: 0.5rem 0;">
-                    🚀 <strong>Gradient Boosting</strong> - Optimización secuencial
-                </div>
-                <div style="padding: 0.5rem 0; border-left: 3px solid #4ecdc4; padding-left: 1rem; margin: 0.5rem 0;">
-                    🌲 <strong>Random Forest</strong> - Consenso de árboles
-                </div>
-                <div style="padding: 0.5rem 0; border-left: 3px solid #45b7d1; padding-left: 1rem; margin: 0.5rem 0;">
-                    🎯 <strong>SVM</strong> - Separación óptima
-                </div>
-            </div>
-            
-            <h4 style="margin-top: 1.5rem;">🗳️ Hard Voting:</h4>
-            <p style="font-size: 0.9rem; line-height: 1.4;">
-                Cada algoritmo emite un voto binario. La decisión final se toma por mayoría simple, 
-                asegurando robustez y reduciendo errores individuales.
-            </p>
-            
-            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
-                <strong>Ejemplo:</strong><br>
-                🚀 Voto: Riesgo | 🌲 Voto: Saludable | 🎯 Voto: Riesgo<br>
-                <strong>Resultado:</strong> 2 votos por "Riesgo" → <strong>Predicción: Riesgo</strong>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    
+    st.markdown("**🎯 Algoritmos Utilizados:**")
+    st.markdown("🚀 **Gradient Boosting** - Optimización secuencial de errores")
+    st.markdown("🌲 **Random Forest** - Consenso de múltiples árboles de decisión")  
+    st.markdown("🎯 **SVM** - Separación óptima mediante hiperplanos")
+    
+    st.markdown("**🗳️ Hard Voting:**")
+    st.markdown("Cada algoritmo emite un voto binario. La decisión final se toma por mayoría simple, asegurando robustez y reduciendo errores individuales.")
+    
+    st.markdown("**Ejemplo de votación:**")
+    st.markdown("🚀 Voto: Riesgo | 🌲 Voto: Saludable | 🎯 Voto: Riesgo")
+    st.markdown("**Resultado:** 2 votos por 'Riesgo' → **Predicción: Riesgo**")
     
     with st.expander("ℹ️ **Glosario de Variables**", expanded=False):
         # Usar components nativos de Streamlit en lugar de HTML
