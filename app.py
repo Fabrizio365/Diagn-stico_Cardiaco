@@ -829,7 +829,7 @@ with st.sidebar:
         <div style="text-align: center; padding: 1rem; margin-bottom: 2rem; 
                     background: rgba(255,255,255,0.1); border-radius: 15px;">
             <h2 style="margin: 0;">🫀 CardioPredict AI</h2>
-            <p style="margin: 0.5rem 0; opacity: 0.9;">Sistema de IA Médica</p>
+            <p style="margin: 0.5rem 0; opacity: 0.9; font-size: 0.9rem;">Machine Learning para la Salud del Corazón</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -848,59 +848,65 @@ with st.sidebar:
     st.markdown("""
         <div class="algorithm-card">
             <h4>🎯 Algoritmos Utilizados:</h4>
-            <ul style="list-style: none; padding: 0;">
-                <li>🚀 <strong>Gradient Boosting</strong></li>
-                <li>🌲 <strong>Random Forest</strong></li> 
-                <li>🎯 <strong>SVM</strong></li>
-            </ul>
+            <div style="margin: 1rem 0;">
+                <div style="padding: 0.5rem 0; border-left: 3px solid #ff6b6b; padding-left: 1rem; margin: 0.5rem 0;">
+                    🚀 <strong>Gradient Boosting</strong> - Optimización secuencial
+                </div>
+                <div style="padding: 0.5rem 0; border-left: 3px solid #4ecdc4; padding-left: 1rem; margin: 0.5rem 0;">
+                    🌲 <strong>Random Forest</strong> - Consenso de árboles
+                </div>
+                <div style="padding: 0.5rem 0; border-left: 3px solid #45b7d1; padding-left: 1rem; margin: 0.5rem 0;">
+                    🎯 <strong>SVM</strong> - Separación óptima
+                </div>
+            </div>
             
-            <h4>🗳️ Hard Voting:</h4>
-            <p style="font-size: 0.9rem;">Cada algoritmo emite un voto binario. La decisión final se toma por mayoría simple, asegurando robustez y reduciendo errores individuales.</p>
+            <h4 style="margin-top: 1.5rem;">🗳️ Hard Voting:</h4>
+            <p style="font-size: 0.9rem; line-height: 1.4;">
+                Cada algoritmo emite un voto binario. La decisión final se toma por mayoría simple, 
+                asegurando robustez y reduciendo errores individuales.
+            </p>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                <strong>Ejemplo:</strong><br>
+                🚀 Voto: Riesgo | 🌲 Voto: Saludable | 🎯 Voto: Riesgo<br>
+                <strong>Resultado:</strong> 2 votos por "Riesgo" → <strong>Predicción: Riesgo</strong>
+            </div>
         </div>
     """, unsafe_allow_html=True)
     
     with st.expander("ℹ️ **Glosario de Variables**", expanded=False):
-        st.markdown("""
-        <div style='font-size: 14px; line-height: 1.6;'>
-            <h4>📋 Variables del Formulario:</h4>
-            
-            <p><strong>👤 Edad:</strong> Años del paciente</p>
-            
-            <p><strong>⚧ Género:</strong><br>
-            • 0 = Femenino<br>
-            • 1 = Masculino</p>
-            
-            <p><strong>💔 Tipo de dolor en el pecho:</strong><br>
-            • 0 = Angina típica (relacionada al esfuerzo)<br>
-            • 1 = Angina atípica<br>
-            • 2 = Dolor no anginoso<br>
-            • 3 = Asintomático (sin dolor)</p>
-            
-            <p><strong>🩺 Presión arterial:</strong> mmHg en reposo</p>
-            
-            <p><strong>🧪 Colesterol:</strong> mg/dL en sangre</p>
-            
-            <p><strong>🍯 Azúcar en ayunas:</strong> >120 mg/dL</p>
-            
-            <p><strong>📈 ECG en reposo:</strong><br>
-            • 0 = Normal<br>
-            • 1 = Anormalidad ST-T<br>
-            • 2 = Hipertrofia ventricular</p>
-            
-            <p><strong>💓 Frecuencia máxima:</strong> Pulsaciones/minuto alcanzadas</p>
-            
-            <p><strong>⚡ Angina inducida:</strong> Dolor causado por ejercicio</p>
-            
-            <p><strong>📉 Oldpeak:</strong> Depresión ST ejercicio vs reposo</p>
-            
-            <p><strong>📊 Pendiente ST:</strong><br>
-            • 0 = Ascendente<br>
-            • 1 = Plana<br>
-            • 2 = Descendente</p>
-            
-            <p><strong>🔍 Vasos mayores:</strong> 0-3 vasos coloreados por fluoroscopia</p>
-        </div>
-        """, unsafe_allow_html=True)
+        # Usar components nativos de Streamlit en lugar de HTML
+        st.markdown("#### 📋 Variables del Formulario:")
+        
+        st.markdown("**👤 Edad:** Años del paciente (1-120)")
+        
+        st.markdown("**⚧ Género:**")
+        st.markdown("• 0 = Femenino  \n• 1 = Masculino")
+        
+        st.markdown("**💔 Tipo de dolor en el pecho:**")
+        st.markdown("• 0 = Angina típica (relacionada al esfuerzo)  \n• 1 = Angina atípica  \n• 2 = Dolor no anginoso  \n• 3 = Asintomático (sin dolor)")
+        
+        st.markdown("**🩺 Presión arterial:** Presión sistólica en reposo (mmHg)")
+        
+        st.markdown("**🧪 Colesterol:** Colesterol sérico total (mg/dL)")
+        
+        st.markdown("**🍯 Azúcar en ayunas:** Glucosa en sangre mayor a 120 mg/dL")
+        
+        st.markdown("**📈 ECG en reposo:**")
+        st.markdown("• 0 = Normal  \n• 1 = Anormalidad ST-T  \n• 2 = Hipertrofia ventricular izquierda")
+        
+        st.markdown("**💓 Frecuencia máxima:** Pulsaciones máximas alcanzadas (bpm)")
+        
+        st.markdown("**⚡ Angina inducida:** Dolor torácico causado por ejercicio")
+        
+        st.markdown("**📉 Oldpeak:** Depresión del segmento ST (ejercicio vs reposo)")
+        
+        st.markdown("**📊 Pendiente del ST:**")
+        st.markdown("• 0 = Ascendente (mejor pronóstico)  \n• 1 = Plana (pronóstico intermedio)  \n• 2 = Descendente (peor pronóstico)")
+        
+        st.markdown("**🔍 Vasos mayores:** Número de vasos principales coloreados por fluoroscopia (0-3)")
+        
+        st.info("💡 **Nota:** Todos estos valores son utilizados por los algoritmos de Machine Learning para generar una predicción basada en patrones aprendidos de datos médicos validados.")
 
 # FORMULARIO DE PREDICCIÓN MEJORADO
 if st.session_state.modelo_entrenado is not None:
@@ -1182,7 +1188,7 @@ else:
 st.markdown("---")
 st.markdown("""
     <div style="text-align: center; padding: 2rem; opacity: 0.8;">
-        <p>🫀 <strong>CardioPredict AI</strong> - Sistema de Predicción Cardiovascular</p>
+        <p>🫀 <strong>CardioPredict AI</strong> - Machine Learning para la Salud del Corazón</p>
         <p style="font-size: 0.9rem;">
             Desarrollado con ❤️ usando Machine Learning | 
             Hard Voting: Gradient Boosting + Random Forest + SVM
