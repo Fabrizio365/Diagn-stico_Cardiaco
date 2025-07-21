@@ -537,7 +537,169 @@ edad,genero,presion,colesterol,target
                     </div>
                 """, unsafe_allow_html=True)
                 
-                # Métricas del dataset por defecto
+                # Métricas del dataset
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    st.markdown(f"""
+                        <div class="metric-card">
+                            <div class="metric-value">{len(df)}</div>
+                            <div class="metric-label">📊 Total Muestras</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                with col2:
+                    st.markdown(f"""
+                        <div class="metric-card">
+                            <div class="metric-value">{X.shape[1]}</div>
+                            <div class="metric-label">📈 Características</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                with col3:
+                    risk_percentage = (y.sum() / len(y)) * 100
+                    st.markdown(f"""
+                        <div class="metric-card">
+                            <div class="metric-value">{risk_percentage:.1f}%</div>
+                            <div class="metric-label">⚠️ Casos Riesgo</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                with col4:
+                    healthy_percentage = ((len(y) - y.sum()) / len(y)) * 100
+                    st.markdown(f"""
+                        <div class="metric-card">
+                            <div class="metric-value">{healthy_percentage:.1f}%</div>
+                            <div class="metric-label">✅ Casos Saludables</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                
+                # Vista previa de los datos
+                with st.expander("👁️ **Vista previa de los datos**"):
+                    st.dataframe(df.head(), use_container_width=True)
+                
+                # Entrenar modelo
+                if st.button("🚀 **Entrenar Modelo con Datos Subidos**", key="train_uploaded"):
+                    with st.spinner("🔄 Entrenando modelo con Hard Voting..."):
+                        try:
+                            modelo, scaler, accuracy, individual_scores, y_test, y_pred = entrenar_modelo(X, y)
+                            
+                            st.session_state.modelo_entrenado = modelo
+                            st.session_state.scaler = scaler
+                            
+                            # Resultado del entrenamiento
+                            st.markdown(f"""
+                                <div class="success-alert">
+                                    🎉 <strong>Modelo entrenado exitosamente</strong><br>
+                                    <span style="font-size: 1.2rem;">Precisión del Ensemble: {accuracy:.2%}</span>
+                                </div>
+                            """, unsafe_allow_html=True)
+                            
+                            # Métricas individuales
+                            st.markdown("### 🏆 Rendimiento Individual vs Ensemble")
+                            col1, col2, col3, col4 = st.columns(4)
+                            
+                            with col1:
+                                st.markdown(f"""
+                                    <div class="vote-card">
+                                        <span class="vote-emoji">🚀</span>
+                                        <h4>Gradient Boosting</h4>
+                                        <div class="metric-value">{individual_scores['Gradient Boosting']:.2%}</div>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                                
+                            with col2:
+                                st.markdown(f"""
+                                    <div class="vote-card">
+                                        <span class="vote-emoji">🌲</span>
+                                        <h4>Random Forest</h4>
+                                        <div class="metric-value">{individual_scores['Random Forest']:.2%}</div>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                                
+                            with col3:
+                                st.markdown(f"""
+                                    <div class="vote-card">
+                                        <span class="vote-emoji">🎯</span>
+                                        <h4>SVM</h4>
+                                        <div class="metric-value">{individual_scores['SVM']:.2%}</div>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                                
+                            with col4:
+                                st.markdown(f"""
+                                    <div class="vote-card" style="background: rgba(255,215,0,0.2);">
+                                        <span class="vote-emoji">🏆</span>
+                                        <h4>Hard Voting</h4>
+                                        <div class="metric-value" style="color: #FFD700;">{accuracy:.2%}</div>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                            
+                            # Matriz de confusión
+                            cm = confusion_matrix(y_test, y_pred)
+                            
+                            st.markdown("### 📊 Matriz de Confusión - Hard Voting")
+                            col1, col2 = st.columns(2)
+                            
+                            with col1:
+                                st.markdown(f"""
+                                    <div class="vote-card">
+                                        <span class="vote-emoji">✅</span>
+                                        <h4>Verdaderos Negativos</h4>
+                                        <div class="metric-value">{cm[0,0]}</div>
+                                        <small>Predicciones correctas: Saludable</small>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                                
+                                st.markdown(f"""
+                                    <div class="vote-card">
+                                        <span class="vote-emoji">❌</span>
+                                        <h4>Falsos Positivos</h4>
+                                        <div class="metric-value">{cm[0,1]}</div>
+                                        <small>Predicciones incorrectas: Riesgo</small>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                            
+                            with col2:
+                                st.markdown(f"""
+                                    <div class="vote-card">
+                                        <span class="vote-emoji">❌</span>
+                                        <h4>Falsos Negativos</h4>
+                                        <div class="metric-value">{cm[1,0]}</div>
+                                        <small>Predicciones incorrectas: Saludable</small>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                                
+                                st.markdown(f"""
+                                    <div class="vote-card">
+                                        <span class="vote-emoji">✅</span>
+                                        <h4>Verdaderos Positivos</h4>
+                                        <div class="metric-value">{cm[1,1]}</div>
+                                        <small>Predicciones correctas: Riesgo</small>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                            
+                        except Exception as e:
+                            st.markdown(f"""
+                                <div class="error-alert">
+                                    ❌ <strong>Error durante el entrenamiento:</strong> {str(e)}
+                                </div>
+                            """, unsafe_allow_html=True)
+        else:
+            st.info("👆 **Sube un archivo CSV para continuar con el entrenamiento personalizado**")
+    
+    else:
+        # Usar dataset por defecto
+        X, y, df = cargar_datos_default()
+        
+        if X is not None and y is not None:
+            st.markdown("""
+                <div class="success-alert">
+                    ✅ <strong>Dataset cardiovascular por defecto cargado correctamente</strong>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # Métricas del dataset por defecto
             col1, col2, col3, col4 = st.columns(4)
             
             with col1:
@@ -1029,166 +1191,5 @@ st.markdown("""
             ⚠️ Esta herramienta es solo para fines educativos y no reemplaza el diagnóstico médico profesional
         </p>
     </div>
-""", unsafe_allow_html=True) del dataset
-                col1, col2, col3, col4 = st.columns(4)
-                
-                with col1:
-                    st.markdown(f"""
-                        <div class="metric-card">
-                            <div class="metric-value">{len(df)}</div>
-                            <div class="metric-label">📊 Total Muestras</div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
-                with col2:
-                    st.markdown(f"""
-                        <div class="metric-card">
-                            <div class="metric-value">{X.shape[1]}</div>
-                            <div class="metric-label">📈 Características</div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
-                with col3:
-                    risk_percentage = (y.sum() / len(y)) * 100
-                    st.markdown(f"""
-                        <div class="metric-card">
-                            <div class="metric-value">{risk_percentage:.1f}%</div>
-                            <div class="metric-label">⚠️ Casos Riesgo</div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
-                with col4:
-                    healthy_percentage = ((len(y) - y.sum()) / len(y)) * 100
-                    st.markdown(f"""
-                        <div class="metric-card">
-                            <div class="metric-value">{healthy_percentage:.1f}%</div>
-                            <div class="metric-label">✅ Casos Saludables</div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                
-                # Vista previa de los datos
-                with st.expander("👁️ **Vista previa de los datos**"):
-                    st.dataframe(df.head(), use_container_width=True)
-                
-                # Entrenar modelo
-                if st.button("🚀 **Entrenar Modelo con Datos Subidos**", key="train_uploaded"):
-                    with st.spinner("🔄 Entrenando modelo con Hard Voting..."):
-                        try:
-                            modelo, scaler, accuracy, individual_scores, y_test, y_pred = entrenar_modelo(X, y)
-                            
-                            st.session_state.modelo_entrenado = modelo
-                            st.session_state.scaler = scaler
-                            
-                            # Resultado del entrenamiento
-                            st.markdown(f"""
-                                <div class="success-alert">
-                                    🎉 <strong>Modelo entrenado exitosamente</strong><br>
-                                    <span style="font-size: 1.2rem;">Precisión del Ensemble: {accuracy:.2%}</span>
-                                </div>
-                            """, unsafe_allow_html=True)
-                            
-                            # Métricas individuales
-                            st.markdown("### 🏆 Rendimiento Individual vs Ensemble")
-                            col1, col2, col3, col4 = st.columns(4)
-                            
-                            with col1:
-                                st.markdown(f"""
-                                    <div class="vote-card">
-                                        <span class="vote-emoji">🚀</span>
-                                        <h4>Gradient Boosting</h4>
-                                        <div class="metric-value">{individual_scores['Gradient Boosting']:.2%}</div>
-                                    </div>
-                                """, unsafe_allow_html=True)
-                                
-                            with col2:
-                                st.markdown(f"""
-                                    <div class="vote-card">
-                                        <span class="vote-emoji">🌲</span>
-                                        <h4>Random Forest</h4>
-                                        <div class="metric-value">{individual_scores['Random Forest']:.2%}</div>
-                                    </div>
-                                """, unsafe_allow_html=True)
-                                
-                            with col3:
-                                st.markdown(f"""
-                                    <div class="vote-card">
-                                        <span class="vote-emoji">🎯</span>
-                                        <h4>SVM</h4>
-                                        <div class="metric-value">{individual_scores['SVM']:.2%}</div>
-                                    </div>
-                                """, unsafe_allow_html=True)
-                                
-                            with col4:
-                                st.markdown(f"""
-                                    <div class="vote-card" style="background: rgba(255,215,0,0.2);">
-                                        <span class="vote-emoji">🏆</span>
-                                        <h4>Hard Voting</h4>
-                                        <div class="metric-value" style="color: #FFD700;">{accuracy:.2%}</div>
-                                    </div>
-                                """, unsafe_allow_html=True)
-                            
-                            # Matriz de confusión
-                            cm = confusion_matrix(y_test, y_pred)
-                            
-                            st.markdown("### 📊 Matriz de Confusión - Hard Voting")
-                            col1, col2 = st.columns(2)
-                            
-                            with col1:
-                                st.markdown(f"""
-                                    <div class="vote-card">
-                                        <span class="vote-emoji">✅</span>
-                                        <h4>Verdaderos Negativos</h4>
-                                        <div class="metric-value">{cm[0,0]}</div>
-                                        <small>Predicciones correctas: Saludable</small>
-                                    </div>
-                                """, unsafe_allow_html=True)
-                                
-                                st.markdown(f"""
-                                    <div class="vote-card">
-                                        <span class="vote-emoji">❌</span>
-                                        <h4>Falsos Positivos</h4>
-                                        <div class="metric-value">{cm[0,1]}</div>
-                                        <small>Predicciones incorrectas: Riesgo</small>
-                                    </div>
-                                """, unsafe_allow_html=True)
-                            
-                            with col2:
-                                st.markdown(f"""
-                                    <div class="vote-card">
-                                        <span class="vote-emoji">❌</span>
-                                        <h4>Falsos Negativos</h4>
-                                        <div class="metric-value">{cm[1,0]}</div>
-                                        <small>Predicciones incorrectas: Saludable</small>
-                                    </div>
-                                """, unsafe_allow_html=True)
-                                
-                                st.markdown(f"""
-                                    <div class="vote-card">
-                                        <span class="vote-emoji">✅</span>
-                                        <h4>Verdaderos Positivos</h4>
-                                        <div class="metric-value">{cm[1,1]}</div>
-                                        <small>Predicciones correctas: Riesgo</small>
-                                    </div>
-                                """, unsafe_allow_html=True)
-                            
-                        except Exception as e:
-                            st.markdown(f"""
-                                <div class="error-alert">
-                                    ❌ <strong>Error durante el entrenamiento:</strong> {str(e)}
-                                </div>
-                            """, unsafe_allow_html=True)
-        else:
-            st.info("👆 **Sube un archivo CSV para continuar con el entrenamiento personalizado**")
-    
-    else:
-        # Usar dataset por defecto
-        X, y, df = cargar_datos_default()
+""", unsafe_allow_html=True)
         
-        if X is not None and y is not None:
-            st.markdown("""
-                <div class="success-alert">
-                    ✅ <strong>Dataset cardiovascular por defecto cargado correctamente</strong>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            # Métricas
