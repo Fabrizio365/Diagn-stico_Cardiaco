@@ -114,7 +114,7 @@ def entrenar_modelo(X, y):
 
 # --------------------------- CONFIGURACIÓN STREAMLIT ---------------------------
 st.set_page_config(
-    page_title="🫀 CardioPredict AI", 
+    page_title="🫀 CardioPredict AI: Machine Learning para la Salud del Corazón", 
     page_icon="🫀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -396,7 +396,7 @@ if not st.session_state.formulario:
     st.markdown("""
         <div class="hero-header fade-in">
             <div class="hero-title">🫀 CardioPredict AI</div>
-            <div class="hero-subtitle">Sistema Inteligente de Predicción Cardiovascular</div>
+            <div class="hero-subtitle">Machine Learning para la Salud del Corazón</div>
             <p style="font-size: 1.1rem; opacity: 0.9; max-width: 800px; margin: 0 auto;">
                 Tecnología de vanguardia que combina <strong>Gradient Boosting</strong>, <strong>Random Forest</strong> 
                 y <strong>SVM</strong> mediante <em>Hard Voting</em> para detectar riesgos cardiovasculares con precisión médica.
@@ -834,7 +834,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     try:
-        st.image("imagen_logo.png", use_column_width=True)
+        st.image("imagen_logo.png", use_container_width=True)
     except:
         st.markdown("""
             <div style="text-align: center; padding: 2rem; 
@@ -1192,4 +1192,3 @@ st.markdown("""
         </p>
     </div>
 """, unsafe_allow_html=True)
-        
