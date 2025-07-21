@@ -6,9 +6,6 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
-import io
 
 # ------------------------ FUNCIONES DE DATOS ------------------------
 @st.cache_data
@@ -298,13 +295,45 @@ if not st.session_state.formulario:
                                 """, unsafe_allow_html=True)
                             
                             # Matriz de confusión
-                            fig, ax = plt.subplots(figsize=(6, 4))
                             cm = confusion_matrix(y_test, y_pred)
-                            sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
-                            ax.set_title('Matriz de Confusión - Hard Voting')
-                            ax.set_xlabel('Predicción')
-                            ax.set_ylabel('Valor Real')
-                            st.pyplot(fig)
+                            
+                            # Crear matriz de confusión con Streamlit
+                            st.markdown("### 📊 Matriz de Confusión - Hard Voting")
+                            col1, col2 = st.columns(2)
+                            
+                            with col1:
+                                st.markdown(f"""
+                                <div class='metric-container'>
+                                <h4>✅ Verdaderos Negativos</h4>
+                                <h2>{cm[0,0]}</h2>
+                                <small>Predicciones correctas: Saludable</small>
+                                </div>
+                                """, unsafe_allow_html=True)
+                                
+                                st.markdown(f"""
+                                <div class='metric-container'>
+                                <h4>❌ Falsos Positivos</h4>
+                                <h2>{cm[0,1]}</h2>
+                                <small>Predicciones incorrectas: Riesgo</small>
+                                </div>
+                                """, unsafe_allow_html=True)
+                            
+                            with col2:
+                                st.markdown(f"""
+                                <div class='metric-container'>
+                                <h4>❌ Falsos Negativos</h4>
+                                <h2>{cm[1,0]}</h2>
+                                <small>Predicciones incorrectas: Saludable</small>
+                                </div>
+                                """, unsafe_allow_html=True)
+                                
+                                st.markdown(f"""
+                                <div class='metric-container'>
+                                <h4>✅ Verdaderos Positivos</h4>
+                                <h2>{cm[1,1]}</h2>
+                                <small>Predicciones correctas: Riesgo</small>
+                                </div>
+                                """, unsafe_allow_html=True)
                             
                         except Exception as e:
                             st.error(f"Error durante el entrenamiento: {str(e)}")
